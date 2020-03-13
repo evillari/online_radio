@@ -1,0 +1,24 @@
+// Fonts
+// @import url('https://fonts.googleapis.com/css?family=Nunito');
+
+@import url("https://fonts.googleapis.com/css?family=Roboto:100,300,400,400i,700&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Kaushan+Script&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Roboto+Slab:300,400,700&display=swap");
+
+// Variables
+//@import "variables";
+
+// Bootstrap
+//@import '~bootstrap/scss/bootstrap';
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+@import "~@fortawesome/fontawesome-free/scss/fontawesome";
+@import "~@fortawesome/fontawesome-free/scss/brands";
+@import "~@fortawesome/fontawesome-free/scss/regular";
+@import "~@fortawesome/fontawesome-free/scss/solid";
+@import "~@fortawesome/fontawesome-free/scss/v4-shims";
