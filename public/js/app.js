@@ -66428,6 +66428,21 @@ if (token) {
 
 /***/ }),
 
+/***/ "./resources/js/components/constant.js":
+/*!*********************************************!*\
+  !*** ./resources/js/components/constant.js ***!
+  \*********************************************/
+/*! exports provided: BASE_API_URL */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BASE_API_URL", function() { return BASE_API_URL; });
+// export const BASE_API_URL = "http://127.0.0.1:8000/api/";
+var BASE_API_URL = "http://192.168.1.2/api/";
+
+/***/ }),
+
 /***/ "./resources/js/components/index.js":
 /*!******************************************!*\
   !*** ./resources/js/components/index.js ***!
@@ -66443,9 +66458,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _leftbar_Track__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./leftbar/Track */ "./resources/js/components/leftbar/Track.js");
-/* harmony import */ var _main_main__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./main/main */ "./resources/js/components/main/main.js");
-/* harmony import */ var _main_search__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./main/search */ "./resources/js/components/main/search.js");
+/* harmony import */ var _leftbar_trackhits__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./leftbar/trackhits */ "./resources/js/components/leftbar/trackhits.js");
+/* harmony import */ var _main_trackresults__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./main/trackresults */ "./resources/js/components/main/trackresults.js");
+/* harmony import */ var _main_player__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./main/player */ "./resources/js/components/main/player.js");
+/* harmony import */ var _main_search__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./main/search */ "./resources/js/components/main/search.js");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./constant */ "./resources/js/components/constant.js");
 
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -66476,10 +66493,12 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+
+
 var Main = /*#__PURE__*/function (_Component) {
   _inherits(Main, _Component);
 
-  function Main(props) {
+  function Main() {
     var _this;
 
     _classCallCheck(this, Main);
@@ -66487,20 +66506,23 @@ var Main = /*#__PURE__*/function (_Component) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Main).call(this));
     _this.state = {
       tophits: [],
-      images: [],
-      info: [],
       value: [],
       result: [],
-      csign: [],
-      url: [],
+      station: [],
       showSearch: false
     };
     _this.getResults = _this.getResults.bind(_assertThisInitialized(_this));
     _this.setToggle = _this.setToggle.bind(_assertThisInitialized(_this));
+    _this.hClick = _this.hClick.bind(_assertThisInitialized(_this));
     return _this;
   }
 
   _createClass(Main, [{
+    key: "hClick",
+    value: function hClick(event) {
+      this.getResults(event);
+    }
+  }, {
     key: "setToggle",
     value: function setToggle() {
       this.setState({
@@ -66511,24 +66533,19 @@ var Main = /*#__PURE__*/function (_Component) {
     key: "getTopHits",
     value: function () {
       var _getTopHits = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var tophits, result;
+        var result;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                tophits = "http://api.dar.fm/topsongs.php?q=Music&callback=json&partner_token=7824139131";
-                _context.next = 3;
-                return axios.get(tophits);
+                _context.next = 2;
+                return axios.get(_constant__WEBPACK_IMPORTED_MODULE_7__["BASE_API_URL"] + "tophits");
 
-              case 3:
+              case 2:
                 result = _context.sent;
-                _context.next = 6;
-                return result.data.result;
+                return _context.abrupt("return", result.data);
 
-              case 6:
-                return _context.abrupt("return", _context.sent);
-
-              case 7:
+              case 4:
               case "end":
                 return _context.stop();
             }
@@ -66543,20 +66560,13 @@ var Main = /*#__PURE__*/function (_Component) {
       return getTopHits;
     }()
   }, {
-    key: "getPlayable",
-    value: function getPlayable(uberurl) {
-      this.setState({
-        info: uberurl
-      });
-    }
-  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
       var _this2 = this;
 
       this.getTopHits().then(function (data) {
         _this2.setState({
-          tophits: _this2.state.tophits.concat(data)
+          tophits: data.body.result
         });
       })["catch"](function (err) {
         return console.log(err);
@@ -66569,33 +66579,38 @@ var Main = /*#__PURE__*/function (_Component) {
 
       var x = event.target.value;
 
-      if (x.length >= 0) {
-        var q = "http://api.dar.fm/songartist.php?search_index=songlist_artist_index2&q=" + "*" + x.trim().replace(" ", "*%20*") + "*" + "&callback=json&partner_token=7824139131";
-        axios.get(q).then(function (data) {
+      if (x.length >= 3) {
+        axios.get(_constant__WEBPACK_IMPORTED_MODULE_7__["BASE_API_URL"] + "search_index/" + x.trim().replace(" ", "*%20*")).then(function (data) {
           _this3.setState({
             value: data.data.result
           });
         });
-      } else {}
+      } else {
+        this.setState({
+          value: []
+        });
+      }
     }
   }, {
-    key: "getURL",
-    value: function getURL(query) {
+    key: "getUrl",
+    value: function getUrl(query) {
       var _this4 = this;
 
-      var q = "http://api.dar.fm/playlist.php?q=" + query.replace(" ", "%20") + "&callback=json";
-      axios.get(q).then(function (data) {
+      axios.get(_constant__WEBPACK_IMPORTED_MODULE_7__["BASE_API_URL"] + "playlist/" + query.replace(" ", "%20")).then(function (data) {
         _this4.setState({
           result: data.data.result
         });
       });
     }
   }, {
-    key: "getStationURL",
-    value: function getStationURL(s_id, callsign) {
-      this.setState({
-        url: "http://stream.dar.fm/" + s_id,
-        csign: callsign
+    key: "getStationInfo",
+    value: function getStationInfo(s_id) {
+      var _this5 = this;
+
+      axios.get(_constant__WEBPACK_IMPORTED_MODULE_7__["BASE_API_URL"] + "station_info/" + s_id).then(function (data) {
+        _this5.setState({
+          station: data.data
+        });
       });
     }
   }, {
@@ -66608,76 +66623,81 @@ var Main = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this5 = this;
+      var _this6 = this;
 
       var _this$state = this.state,
+          station = _this$state.station,
           tophits = _this$state.tophits,
           result = _this$state.result,
           showSearch = _this$state.showSearch;
       return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-        className: "lg:flex lg:flex-row-reverse"
-      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-        className: "mx-auto text-center lg:7/12"
-      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
         className: ""
       }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-        className: ""
-      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_main_main__WEBPACK_IMPORTED_MODULE_4__["default"], {
-        station: this.state.csign,
-        s_url: this.state.url,
-        info: this.state.info
-      }))), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "md:flex md:flex-row md:flex-row-reverse"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "md:w-7/12 mx-auto text-center"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
         className: "flex justify-center"
       }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
         type: "text",
-        className: "border rounded w-full m-4 ",
+        className: "outline-none border rounded-full w-full m-4 ",
         placeholder: "Search songs or artist...",
+        onClick: this.hClick,
         onChange: this.getResults,
         onFocus: this.setToggle
       }))), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, showSearch ? react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ul", {
         className: "text-black border bg-gray-400 "
-      }, this.state.value.map(function (key, i) {
-        return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_main_search__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      }, this.state.value.slice(0, 10).map(function (key, i) {
+        return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_main_search__WEBPACK_IMPORTED_MODULE_6__["default"], {
           key: i,
           pitem: key,
           hclick: function hclick() {
-            _this5.getURL(key);
+            _this6.getUrl(key);
 
-            _this5.showDropdown();
+            _this6.showDropdown();
           }
         });
       }))) : react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null))), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-        className: "flex flex-wrap justify-center lg:overflow-y-auto h-screen"
+        className: "flex flex-wrap justify-center lg:overflow-y-auto lg:h-screen"
       }, result.map(function (track, i) {
-        return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_leftbar_Track__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_main_trackresults__WEBPACK_IMPORTED_MODULE_4__["default"], {
           key: i,
           title: track.title,
           artist: track.artist,
           station: track.callsign,
           hclick: function hclick() {
-            return _this5.getStationURL(track.station_id, track.callsign);
+            return _this6.getStationInfo(track.station_id);
           }
         });
       })))), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-        className: "mx-auto text-center lg:w-5/12"
-      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
-        className: "text-2xl py-4"
-      }, "Top Hits on Radio!!!"), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, " Currently Playing: ")), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-        className: "flex flex-wrap justify-center lg:overflow-y-auto h-screen"
-      }, tophits.map(function (track, i) {
-        return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-          key: i,
-          className: ""
-        }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_leftbar_Track__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        className: "md:w-4/12",
+        style: {
+          paddingBottom: "110px"
+        }
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "text-center"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
+        className: "text-2xl py-4 text-white"
+      }, "Top Hits on Radio!!!")), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "flex flex-wrap py-4 overflow-y-auto h-screen",
+        style: {
+          height: "100%"
+        }
+      }, tophits.slice(0, 20).map(function (track, i) {
+        return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_leftbar_trackhits__WEBPACK_IMPORTED_MODULE_3__["default"], {
           key: i,
           title: track.songtitle,
           artist: track.songartist,
+          station: track.uberurl.callsign,
           hclick: function hclick() {
-            return _this5.getPlayable(track.uberurl);
-          },
-          station: track.uberurl.callsign
-        }));
-      }))));
+            return _this6.getStationInfo(track.station_id);
+          }
+        });
+      })))), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "mx-auto fixed  bottom-0 w-screen"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_main_player__WEBPACK_IMPORTED_MODULE_5__["default"], {
+        station: station
+      })));
     }
   }]);
 
@@ -66686,28 +66706,31 @@ var Main = /*#__PURE__*/function (_Component) {
 
 /* harmony default export */ __webpack_exports__["default"] = (Main);
 
-if (document.getElementById("top-tracks")) {
-  react_dom__WEBPACK_IMPORTED_MODULE_2___default.a.render(react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Main, null), document.getElementById("top-tracks"));
+if (document.getElementById("radio")) {
+  react_dom__WEBPACK_IMPORTED_MODULE_2___default.a.render(react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Main, null), document.getElementById("radio"));
 }
 
 /***/ }),
 
-/***/ "./resources/js/components/leftbar/Track.js":
-/*!**************************************************!*\
-  !*** ./resources/js/components/leftbar/Track.js ***!
-  \**************************************************/
+/***/ "./resources/js/components/leftbar/trackhits.js":
+/*!******************************************************!*\
+  !*** ./resources/js/components/leftbar/trackhits.js ***!
+  \******************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Track; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TrackHits; });
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _radio_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../radio.png */ "./resources/js/components/radio.png");
+/* harmony import */ var _radio_png__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_radio_png__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../constant */ "./resources/js/components/constant.js");
 
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -66735,39 +66758,44 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
-var Track = /*#__PURE__*/function (_Component) {
-  _inherits(Track, _Component);
 
-  function Track() {
+
+var TrackHits = /*#__PURE__*/function (_Component) {
+  _inherits(TrackHits, _Component);
+
+  function TrackHits() {
     var _this;
 
-    _classCallCheck(this, Track);
+    _classCallCheck(this, TrackHits);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Track).call(this));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(TrackHits).call(this));
     _this.state = {
       src_img: []
     };
     return _this;
   }
 
-  _createClass(Track, [{
+  _createClass(TrackHits, [{
     key: "getSourceImage",
     value: function () {
       var _getSourceImage = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(songartist, songtitle) {
-        var url_src, data;
+        var data;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                url_src = "http://api.dar.fm/songart.php?artist=" + songartist + "&title=" + songtitle + "&res=med&callback=json&partner_token=7824139131";
-                _context.next = 3;
-                return axios.get(url_src);
+                _context.next = 2;
+                return axios.get(_constant__WEBPACK_IMPORTED_MODULE_4__["BASE_API_URL"] + "artist_image/" + songartist + "&title=" + songtitle);
 
-              case 3:
+              case 2:
                 data = _context.sent;
-                return _context.abrupt("return", data.data.result[0]["arturl"]);
+                _context.next = 5;
+                return data.data.result[0]["arturl"];
 
               case 5:
+                return _context.abrupt("return", _context.sent);
+
+              case 6:
               case "end":
                 return _context.stop();
             }
@@ -66795,41 +66823,52 @@ var Track = /*#__PURE__*/function (_Component) {
       });
     }
   }, {
+    key: "setCallbackImage",
+    value: function setCallbackImage() {
+      this.setState({
+        src_img: _radio_png__WEBPACK_IMPORTED_MODULE_3___default.a
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
+      var _this3 = this;
+
       var _this$props = this.props,
           title = _this$props.title,
           artist = _this$props.artist,
           station = _this$props.station;
       var src_img = this.state.src_img;
-      return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+      return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
         onClick: this.props.hclick,
-        className: "cursor-pointer"
-      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-        className: " m-4 border bg-gray-200 rounded-lg hover:bg-green-100 shadow-lg overflow-hidden",
+        className: " mx-auto border-gray-100 bg-gray-200 rounded-lg  overflow-hidden flex cursor-pointer transition duration-300 ease-in-out transform hover:scale-110 m-2",
         style: {
-          width: "200px",
-          height: "auto"
+          width: "300px",
+          height: "100px"
         }
-      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-        style: {
-          width: "200px",
-          height: "200px"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("img", {
+        className: "object-cover ",
+        width: "150px",
+        height: "150px",
+        src: src_img,
+        onError: function onError() {
+          return _this3.setCallbackImage();
         }
-      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("img", {
-        className: "object-cover",
-        src: src_img
       })), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-        className: "p-2 bg-gray-900  text-left text-sm"
+        className: "p-1 bg-black  text-left text-xs w-full h-full  "
       }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-        className: "flex text-gray-100 items-baseline"
+        className: "flex text-gray-100 items-baseline "
       }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("i", {
         className: "fas fa-music pr-2"
-      }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, " ", title)), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+      }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
+        className: "font-bold"
+      }, " ", title)), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
         className: "pb-1 flex text-gray-100 items-baseline"
       }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("i", {
         className: "fas fa-microphone pr-2"
-      }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, " ", artist)), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("hr", {
+      }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
+        className: "italic"
+      }, " ", artist)), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("hr", {
         className: "pb-1"
       }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
         className: "flex text-gray-100 items-baseline "
@@ -66837,32 +66876,43 @@ var Track = /*#__PURE__*/function (_Component) {
         className: "fas fa-headphones pr-2"
       }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
         className: "text-xs  "
-      }, station))))));
+      }, station))));
     }
   }]);
 
-  return Track;
+  return TrackHits;
 }(react__WEBPACK_IMPORTED_MODULE_1__["Component"]);
 
 
 
 /***/ }),
 
-/***/ "./resources/js/components/main/main.js":
-/*!**********************************************!*\
-  !*** ./resources/js/components/main/main.js ***!
-  \**********************************************/
+/***/ "./resources/js/components/main/player.js":
+/*!************************************************!*\
+  !*** ./resources/js/components/main/player.js ***!
+  \************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MainPage; });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Player; });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _radio_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../radio.png */ "./resources/js/components/radio.png");
+/* harmony import */ var _radio_png__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_radio_png__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../constant */ "./resources/js/components/constant.js");
+
+
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66883,45 +66933,193 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
-var MainPage = /*#__PURE__*/function (_Component) {
-  _inherits(MainPage, _Component);
 
-  function MainPage(props) {
+
+var Player = /*#__PURE__*/function (_Component) {
+  _inherits(Player, _Component);
+
+  //url, image, description, encoding, country, state, city, language,
+  function Player(props) {
     var _this;
 
-    _classCallCheck(this, MainPage);
+    _classCallCheck(this, Player);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(MainPage).call(this, props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Player).call(this, props));
     _this.state = {
-      src: []
+      audiostatus: [],
+      current: [],
+      status: false,
+      RadioImage: _radio_png__WEBPACK_IMPORTED_MODULE_3___default.a
     };
     return _this;
   }
 
-  _createClass(MainPage, [{
+  _createClass(Player, [{
+    key: "setErrorAudio",
+    value: function setErrorAudio() {
+      this.setState({
+        audiostatus: "Station out of reach",
+        status: false,
+        current: [],
+        RadioImage: _radio_png__WEBPACK_IMPORTED_MODULE_3___default.a
+      });
+    }
+  }, {
+    key: "setLoadStart",
+    value: function setLoadStart() {
+      this.setState({
+        audiostatus: "Loading...",
+        status: false,
+        current: [],
+        RadioImage: _radio_png__WEBPACK_IMPORTED_MODULE_3___default.a
+      });
+    }
+  }, {
+    key: "setOnPlay",
+    value: function setOnPlay() {
+      this.setState({
+        audiostatus: "Started",
+        status: true
+      });
+    }
+  }, {
+    key: "setOnPlaying",
+    value: function setOnPlaying() {
+      this.setState({
+        audiostatus: "Playing",
+        status: true,
+        RadioImage: []
+      });
+    }
+  }, {
+    key: "setOnPause",
+    value: function setOnPause() {
+      this.setState({
+        audiostatus: "Pause",
+        status: true
+      });
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      setInterval(function () {
+        if (_this2.state.status) {
+          _this2.getCurrentPlaying();
+        }
+      }, 1000);
+    }
+  }, {
+    key: "getCurrentPlaying",
+    value: function () {
+      var _getCurrentPlaying = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var _this3 = this;
+
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return axios.get(_constant__WEBPACK_IMPORTED_MODULE_4__["BASE_API_URL"] + "current_playing/" + this.props.station.id).then(function (data) {
+                  _this3.setState({
+                    current: data.data.result[0]
+                  });
+                });
+
+              case 2:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function getCurrentPlaying() {
+        return _getCurrentPlaying.apply(this, arguments);
+      }
+
+      return getCurrentPlaying;
+    }()
+  }, {
     key: "render",
     value: function render() {
-      var _ref, _this$props$info$call, _this$props$info$url;
+      var _this4 = this;
 
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "border shadow-lg rounded-lg overflow-hidden m-4"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "flex justify-center mx-auto"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", {
-        className: "text-left p-2"
-      }, (_ref = (_this$props$info$call = this.props.info.callsign) !== null && _this$props$info$call !== void 0 ? _this$props$info$call : this.props.station) !== null && _ref !== void 0 ? _ref : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, " No station playing. "))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "flex justify-center mx-auto bg-gray-300"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("audio", {
-        src: (_this$props$info$url = this.props.info.url) !== null && _this$props$info$url !== void 0 ? _this$props$info$url : this.props.s_url,
+      var _this$props$station = this.props.station,
+          id = _this$props$station.id,
+          callsign = _this$props$station.callsign,
+          url = _this$props$station.url,
+          image = _this$props$station.image,
+          description = _this$props$station.description,
+          encoding = _this$props$station.encoding,
+          country = _this$props$station.country,
+          state = _this$props$station.state,
+          city = _this$props$station.city,
+          language = _this$props$station.language;
+      var _this$state = this.state,
+          status = _this$state.status,
+          audiostatus = _this$state.audiostatus,
+          RadioImage = _this$state.RadioImage;
+      return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "mx-auto border shadow-lg rounded-lg overflow-hidden w-full  "
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: " justify-center mx-auto text-xs"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "bg-gray-200 text-dark-800 rounded text-xs  ",
+        style: {
+          height: "auto"
+        }
+      }, status ? react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "flex flex-col justify-center "
+      }, this.state.current.title !== undefined ? react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: " bg-gray-300 text-center"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, "Currently Playing:")), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "text-center"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "text-left px-2 font-bold"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("i", {
+        className: "fas fa-music pr-2"
+      }), this.state.current.title))) : "", this.state.current.artist !== undefined ? react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "text-left px-2 italic w-full"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("i", {
+        className: "fas fa-microphone pr-2"
+      }), this.state.current.artist)) : "") : "")), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "mx-auto bg-gray-300 "
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "flex justify-between items-center bg-black text-white rounded  text-xs px-4"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
+        className: "text-left px-2"
+      }, audiostatus), this.state.current.callsign !== undefined ? react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "px-2 "
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("i", {
+        className: "fas fa-headphones pr-2"
+      }), this.state.current.callsign) : ""), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("audio", {
+        src: url,
         controls: true,
         autoPlay: true,
-        className: "outline-none"
+        className: "outline-none w-full",
+        onError: function onError() {
+          return _this4.setErrorAudio();
+        },
+        onLoadStart: function onLoadStart() {
+          return _this4.setLoadStart();
+        },
+        onPlay: function onPlay() {
+          return _this4.setOnPlay();
+        },
+        onPlaying: function onPlaying() {
+          return _this4.setOnPlaying();
+        },
+        onPause: function onPause() {
+          return _this4.setOnPause();
+        }
       }))));
     }
   }]);
 
-  return MainPage;
-}(react__WEBPACK_IMPORTED_MODULE_0__["Component"]);
+  return Player;
+}(react__WEBPACK_IMPORTED_MODULE_1__["Component"]);
 
 
 
@@ -66987,6 +67185,197 @@ var Search = /*#__PURE__*/function (_Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0__["Component"]);
 
 
+
+/***/ }),
+
+/***/ "./resources/js/components/main/trackresults.js":
+/*!******************************************************!*\
+  !*** ./resources/js/components/main/trackresults.js ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TrackResults; });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _radio_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../radio.png */ "./resources/js/components/radio.png");
+/* harmony import */ var _radio_png__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_radio_png__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../constant */ "./resources/js/components/constant.js");
+
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+
+
+
+var TrackResults = /*#__PURE__*/function (_Component) {
+  _inherits(TrackResults, _Component);
+
+  function TrackResults() {
+    var _this;
+
+    _classCallCheck(this, TrackResults);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(TrackResults).call(this));
+    _this.state = {
+      src_img: []
+    };
+    return _this;
+  }
+
+  _createClass(TrackResults, [{
+    key: "getSourceImage",
+    value: function () {
+      var _getSourceImage = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(songartist, songtitle) {
+        var data;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return axios.get(_constant__WEBPACK_IMPORTED_MODULE_4__["BASE_API_URL"] + "artist_image/" + songartist + "&title=" + songtitle);
+
+              case 2:
+                data = _context.sent;
+                _context.next = 5;
+                return data.data.result[0]["arturl"];
+
+              case 5:
+                return _context.abrupt("return", _context.sent);
+
+              case 6:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+
+      function getSourceImage(_x, _x2) {
+        return _getSourceImage.apply(this, arguments);
+      }
+
+      return getSourceImage;
+    }()
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      this.getSourceImage(this.props.artist, this.props.title).then(function (response) {
+        _this2.setState({
+          src_img: response
+        });
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    }
+  }, {
+    key: "setCallbackImage",
+    value: function setCallbackImage() {
+      this.setState({
+        src_img: _radio_png__WEBPACK_IMPORTED_MODULE_3___default.a
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this3 = this;
+
+      var _this$props = this.props,
+          title = _this$props.title,
+          artist = _this$props.artist,
+          station = _this$props.station;
+      var src_img = this.state.src_img;
+      return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        onClick: this.props.hclick,
+        className: "cursor-pointer "
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: " m-4 border bg-gray-200 rounded-lg hover:bg-green-100 shadow-lg overflow-hidden",
+        style: {
+          width: "160px",
+          height: "auto"
+        }
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        style: {
+          width: "160px",
+          height: "160px"
+        }
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("img", {
+        className: "object-cover",
+        src: src_img,
+        onError: function onError() {
+          return _this3.setCallbackImage();
+        }
+      })), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "p-2 bg-gray-900  text-left text-xs"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "flex text-gray-100 items-baseline "
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("i", {
+        className: "fas fa-music pr-2"
+      }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
+        className: "font-bold"
+      }, " ", title)), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "pb-1 flex text-gray-100 items-baseline"
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("i", {
+        className: "fas fa-microphone pr-2"
+      }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
+        className: "italic"
+      }, " ", artist)), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("hr", {
+        className: "pb-1"
+      }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+        className: "flex text-gray-100 items-baseline "
+      }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("i", {
+        className: "fas fa-headphones pr-2"
+      }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", {
+        className: "text-xs  "
+      }, station))))));
+    }
+  }]);
+
+  return TrackResults;
+}(react__WEBPACK_IMPORTED_MODULE_1__["Component"]);
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/radio.png":
+/*!*******************************************!*\
+  !*** ./resources/js/components/radio.png ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "/images/radio.png?f808648c20317b3a165ea68fdf75187e";
 
 /***/ }),
 

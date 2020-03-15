@@ -16,7 +16,7 @@
             <div class="flex flex-col sm:flex-row sm:justify-between">
                 <div class="flex border rounded-full overflow-hidden sm:w-5/12 mb-8 sm:mb-0">
                     <i class="fas fa-user  pl-4 pr-6 bg-gray-200 text-center p-2"></i>
-                    <input id="firstname" type="text" class=" hover:bg-gray-100 flex-1 w-auto outline-none form-control @error('firstname') is-invalid @enderror" placeholder="firstname" name="firstname" value="{{ old('firstname') ?? $user->profile->firstname }}" required autocomplete="firstname" autofocus>
+                    <input id="firstname" type="text" class=" hover:bg-gray-100 flex-1 w-auto outline-none form-control @error('firstname') is-invalid @enderror" placeholder="firstname" name="firstname" value="{{ old('firstname') ?? $user->profile->firstname }}"  autocomplete="firstname" autofocus>
                    
                 </div>
                 <div>
@@ -29,7 +29,7 @@
 
                 <div class="flex border rounded-full overflow-hidden sm:w-5/12">
                     <i class="fas fa-user  pl-4 pr-6 bg-gray-200 text-center p-2"></i>
-                    <input id="lastname" type="text" class=" hover:bg-gray-100 flex-1 w-auto outline-none form-control @error('lastname') is-invalid @enderror" placeholder="lastname" name="lastname" value="{{ old('lastname') ?? $user->profile->lastname }}" required autocomplete="lastname" autofocus>
+                    <input id="lastname" type="text" class=" hover:bg-gray-100 flex-1 w-auto outline-none form-control @error('lastname') is-invalid @enderror" placeholder="lastname" name="lastname" value="{{ old('lastname') ?? $user->profile->lastname }}"  autocomplete="lastname" autofocus>
                    
                 </div>
                 <div> 
