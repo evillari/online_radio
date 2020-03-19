@@ -10,6 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+use App\Events\PresenceEvent;
+
 Auth::routes();
 
 
@@ -22,3 +25,7 @@ Route::get('/profile/{user}/edit','ProfilesController@edit' )->name('profile.edi
 Route::patch('/profile/{user}', 'ProfilesController@update')->name('profile.update');
 
 Route::delete('/profile/{user}', 'ProfilesController@destroy')->name('profile.destroy');
+
+Route::get('/event', function(){
+    broadcast(new PresenceEvent("test event"));
+});

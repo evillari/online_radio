@@ -14,11 +14,14 @@ use Illuminate\Http\Request;
 */
 use GuzzleHttp\Client;
 
-Route::get('/test', function() {
+Route::get('/test', function () {
    return 'hello api test';
 });
 
 Route::get('/tophits', 'API\RequestController@getTopHits');
+
+
+Route::get('/reco/{genre}', 'API\RequestController@getReco');
 
 Route::get('/search_index/{params}', 'API\RequestController@getIndex');
 
@@ -26,6 +29,6 @@ Route::get('/playlist/{params}', 'API\RequestController@getPlayList');
 
 Route::get('/station_info/{params}', 'API\RequestController@getStationInfo');
 
-Route::get('/artist_image/{params}','API\RequestController@getArtistImage');
+Route::get('/artist_image/{params}', 'API\RequestController@getArtistImage');
 
-Route::get('/current_playing/{params}','API\RequestController@getCurrentPlaying');
+Route::get('/current_playing/{params}', 'API\RequestController@getCurrentPlaying');

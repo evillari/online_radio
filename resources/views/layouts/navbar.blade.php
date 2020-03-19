@@ -20,20 +20,28 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body >
-    <div class="p-4 flex justify-between nav-menu bg-black text-white">
-        <div class="p-2" > 
-            <a href="/" > Online Radio</a>
-        </div>
-        <div class="flex items-center hover:bg-gray-900 p-2 rounded cursor-pointer" >
+    
+    <div class="px-4 py-2 flex justify-between nav-menu text-gray-700 border-b-2 ">
+        
+        
+        <a class="px-2 tracking-widest" href="/"> 
+            <h1 > Online Radio</h1>
+        </a>
+        <a class="flex items-center px-2 rounded cursor-pointer" href="/profile">
          
-            <div> 
-                <a  href="/profile">  
-                    <span > {{ Auth::user()->username }} </span>         
-                </a> 
-                
+            
+            <div class="outline-none px-2">
+
+            <img src="{{ auth()->user()->profile->profileImage() }}" width="30px" height="30px" class="rounded-full" />
             </div>
-        </div>
+            <div class="pr-2"> 
+             
+                    <h1 > {{ Auth::user()->username }} </h1>                  
+            </div>
+            
+        </a>
     </div>
+
    
     @yield('content')
             

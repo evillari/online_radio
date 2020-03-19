@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import Radio from "../radio.png";
 import * as Info from "../constant";
 
-export default class TrackResults extends Component {
+export default class TrackHits extends Component {
     constructor() {
         super();
         this.state = {
@@ -49,24 +49,21 @@ export default class TrackResults extends Component {
             <React.Fragment>
                 <div
                     onClick={this.props.hclick}
-                    className="my-4 cursor-pointer transform hover:scale-110 "
+                    className="cursor-pointer transform hover:scale-110 "
                 >
                     <div
-                        className="flex flex-row border bg-gray-200 rounded-lg hover:bg-green-100 shadow-lg overflow-hidden"
-                        style={{ width: "300px", height: "80px" }}
+                        className=" border bg-gray-200 rounded-lg shadow-lg overflow-hidden"
+                        style={{ width: "160px", height: "auto" }}
                     >
-                        <div style={{ width: "80px", height: "80px" }}>
+                        <div style={{ width: "160px", height: "160px" }}>
                             <img
-                                className="object-cover object-center"
+                                className="object-cover"
                                 src={src_img}
                                 onError={() => this.setCallbackImage()}
                             />
                         </div>
 
-                        <div
-                            className="p-2 bg-gray-900  text-left text-xs"
-                            style={{ width: "220px", height: "80px" }}
-                        >
+                        <div className="p-2 bg-gray-900  text-left text-xs">
                             <div className="flex text-gray-100 items-baseline ">
                                 <i className="fas fa-music pr-2"></i>
                                 <h1
@@ -97,7 +94,7 @@ export default class TrackResults extends Component {
                             <div className="flex text-gray-100 items-baseline ">
                                 <i className="fas fa-headphones pr-2"></i>
                                 <h1
-                                    className="text-xs "
+                                    className="text-xs  "
                                     style={{
                                         textOverflow: "ellipsis",
                                         overflow: "hidden",

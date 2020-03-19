@@ -6,6 +6,7 @@ use App\Profile;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Facades\Image;
 
 class ProfilesController extends Controller
 {
@@ -13,7 +14,6 @@ class ProfilesController extends Controller
     public function __construct()
     {
         return $this->middleware('auth');
-        
     }
     /**
      * Display a listing of the resource.
@@ -78,24 +78,35 @@ class ProfilesController extends Controller
      * @param  \App\Profile  $profile
      * @return \Illuminate\Http\Response
      */
-    public function update(User $user) 
+    public function update(User $user)
     {
-        
+
         $this->authorize('update', $user->profile);
         $info = request()->validate([
             'firstname' => '',
             'lastname' => '',
-            'username' => 'required '
+            'genre' => '',
+            'country' => '',
+            'image' =>  'max :1000 | image | dimensions:max_width=256,max_height=256'
 
         ]);
 
-        auth()->user()->profile->update($info);
-        auth()->user()->update([
-            'username' => request()->username
-        ]);
+        if (request('image')) {
+
+            $image = request('image');
+            $type = pathinfo($image, PATHINFO_EXTENSION);
+            $file_content = file_get_contents($image);
+            $base64image = "data:image/" . $type . ";base64, " . base64_encode($file_content);
+
+            $imageArray = ['image' => $base64image];
+        }
+
+        auth()->user()->profile->update(array_merge(
+            $info,
+            $imageArray ?? []
+        ));
 
         return redirect('/profile');
-
     }
 
     /**
@@ -109,13 +120,10 @@ class ProfilesController extends Controller
         $user_to_delete = $user;
         Auth::logout();
 
-        if($user_to_delete->delete()){
+        if ($user_to_delete->delete()) {
             $user_to_delete->profile->delete();
 
             return redirect('/');
         }
-
-        
     }
-
 }
