@@ -4,15 +4,28 @@ import Radio from "../radio.png";
 import * as Info from "../constant";
 
 export default class Player extends Component {
-    //url, image, description, encoding, country, state, city, language,
+    //id, url, image, description, encoding, country, state, city, language,
     constructor(props) {
         super(props);
         this.state = {
             audiostatus: [],
             current: [],
             status: false,
-            RadioImage: Radio
+            RadioImage: Radio,
+            isFavorite: false,
+            src_img: []
         };
+        this.toggleFavorite = this.toggleFavorite.bind(this);
+    }
+
+    toggleFavorite() {
+        const url =
+            Info.BASE_WEB_URL + "togglefavorite/" + this.props.station.id;
+        axios.get(url).then(result => {
+            this.setState({
+                isFavorite: result.data.return
+            });
+        });
     }
 
     setErrorAudio() {
@@ -32,6 +45,12 @@ export default class Player extends Component {
         });
     }
     setOnPlay() {
+        const url = Info.BASE_WEB_URL + "isfavorite/" + this.props.station.id;
+        axios.get(url).then(result => {
+            this.setState({
+                isFavorite: result.data.return
+            });
+        });
         this.setState({
             audiostatus: "Started",
             status: true
@@ -52,11 +71,28 @@ export default class Player extends Component {
     }
 
     componentDidMount() {
+        document
+            .getElementById("favorite")
+            .addEventListener("click", this.toggleFavorite);
+
+        const url = Info.BASE_WEB_URL + "isfavorite/" + this.props.station.id;
+        axios.get(url).then(result => {
+            this.setState({
+                isFavorite: result.data.return
+            });
+        });
+
         setInterval(() => {
             if (this.state.status) {
                 this.getCurrentPlaying();
             }
-        }, 1000);
+        }, 4000);
+    }
+
+    componentWillUnmount() {
+        document
+            .getElementById("favorite")
+            .removeEventListener("click", this.toggleFavorite);
     }
 
     async getCurrentPlaying() {
@@ -83,7 +119,13 @@ export default class Player extends Component {
             language
         } = this.props.station;
 
-        const { status, audiostatus, RadioImage, current } = this.state;
+        const {
+            status,
+            audiostatus,
+            RadioImage,
+            current,
+            src_img
+        } = this.state;
         return (
             <div className="mx-auto overflow-hidden w-full  ">
                 <div className=" justify-center mx-auto text-xs">
@@ -93,7 +135,7 @@ export default class Player extends Component {
                     >
                         <div className="flex items-center justify-around px-2">
                             <div className="w-5/12">
-                                <img src={Radio} />
+                                <img src={RadioImage} />
                             </div>
                             <div className="mx-auto px-4 w-7/12">
                                 {current.callsign && status ? (
@@ -194,6 +236,26 @@ export default class Player extends Component {
                             onPlaying={() => this.setOnPlaying()}
                             onPause={() => this.setOnPause()}
                         />
+
+                        <div
+                            className={
+                                "py-1 flex items-center border-b " +
+                                (current.callsign && status ? "" : "hidden")
+                            }
+                        >
+                            <div
+                                onClick={() => this.toggleFavorite}
+                                id="favorite"
+                                className={
+                                    "text-lg font-hairline cursor-pointer px-2 py-1 " +
+                                    (this.state.isFavorite
+                                        ? "text-red-500 border-red-500"
+                                        : "")
+                                }
+                            >
+                                <i className=" far fa-heart"> </i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

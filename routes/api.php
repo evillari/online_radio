@@ -20,7 +20,6 @@ Route::get('/test', function () {
 
 Route::get('/tophits', 'API\RequestController@getTopHits');
 
-
 Route::get('/reco/{genre}', 'API\RequestController@getReco');
 
 Route::get('/search_index/{params}', 'API\RequestController@getIndex');
@@ -32,3 +31,5 @@ Route::get('/station_info/{params}', 'API\RequestController@getStationInfo');
 Route::get('/artist_image/{params}', 'API\RequestController@getArtistImage');
 
 Route::get('/current_playing/{params}', 'API\RequestController@getCurrentPlaying');
+
+Route::get('/roster/{activity}/{userid?}/{socketid}', 'EventController@updateRoster');

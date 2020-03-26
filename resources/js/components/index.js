@@ -3,9 +3,12 @@ import ReactDOM from "react-dom";
 import TrackHits from "./main/trackhits";
 import TrackResults from "./main/trackresults";
 import Player from "./leftbar/player";
-import Search from "./main/search";
-import Listener from "./rightbar/listener";
+import Search from "./rightbar/search";
+import Listener from "./leftbar/listener";
+import OfflineListener from "./leftbar/offlinelistener";
 import Recommendation from "./main/recommendation";
+import Messenger from "./main/messenger";
+import Favorites from "./main/favorites";
 import * as Info from "./constant";
 
 class Main extends Component {
@@ -18,13 +21,18 @@ class Main extends Component {
             result: [],
             station: [],
             showSearch: false,
-            showrightbar: false
+            showrightbar: false,
+            socketid: "",
+            roster: [],
+            loginresponse: [],
+            messengerwindow: [],
+            favorites: []
         };
         this.getResults = this.getResults.bind(this);
         this.setToggle = this.setToggle.bind(this);
         this.hClick = this.hClick.bind(this);
-
-        const leftbar = "";
+        this.openChat = this.openChat.bind(this);
+        this.closeChat = this.closeChat.bind(this);
     }
 
     hClick(event) {
@@ -49,26 +57,45 @@ class Main extends Component {
         return result.data;
     }
 
-    async getCountryHits() {
-        const result = await axios.get(Info.BASE_API_URL + "tophits");
-        return result.data;
-    }
-
     componentDidMount() {
-        // window.Echo.channel("attendance-channel").listen(
-        //     ".attendance-event",
-        //     e => {
-        //         console.log("fired-triggered");
-        //     }
-        // );
+        window.Echo.listen("roster-channel", ".roster-event", e => {
+            if (e.activity == "rosterupdate") {
+                this.setState({
+                    roster: e.data
+                });
+                console.log(this.state.roster);
+            }
+            if (
+                e.activity == "favoriteupdate" &&
+                e.owner == this.props.username
+            ) {
+                this.setState({
+                    favorites: e.data
+                });
+                console.log(e.data);
+            }
+        });
 
-        // window.Echo.connector.socket.on("connect", function() {
-        //     console.log("connected");
-        // });
+        window.Echo.connector.socket.on("connect", () => {
+            this.setState({
+                socketid: window.Echo.socketId()
+            });
 
-        // window.Echo.connector.socket.on("disconnect", function() {
-        //     alert("disconnected");
-        // });
+            return axios
+                .get(
+                    Info.BASE_API_URL +
+                        "roster/" +
+                        "login/" +
+                        this.props.userid +
+                        "/" +
+                        this.state.socketid
+                )
+                .then(result => {
+                    this.setState({
+                        roster: result.data
+                    });
+                });
+        });
 
         this.getTopHits()
             .then(data => {
@@ -77,7 +104,6 @@ class Main extends Component {
                 });
             })
             .catch(err => console.log(err));
-
         this.getGenreHits()
             .then(data => {
                 this.setState({
@@ -87,6 +113,20 @@ class Main extends Component {
             .catch(err => {
                 console.log(err);
             });
+        this.getFav()
+            .then(data => {
+                this.setState({
+                    favorites: data
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    async getFav() {
+        const result = await axios.get(Info.BASE_WEB_URL + "favorites");
+        return await result.data;
     }
 
     getResults(event) {
@@ -147,9 +187,9 @@ class Main extends Component {
 
                 <div className="border-t border-b flex flex-row overflow-x-scroll py-6">
                     {this.state.tophits.slice(0, 15).map((track, i) => (
-                        <div className="mr-6">
+                        <div key={i} className="mr-6">
                             <TrackHits
-                                key={track.toString()}
+                                key={track.station_id}
                                 title={track.songtitle}
                                 artist={track.songartist}
                                 station={track.uberurl.callsign}
@@ -171,9 +211,9 @@ class Main extends Component {
 
                 <div className="border-t border-b flex flex-row overflow-x-scroll py-6">
                     {this.state.genrehits.slice(0, 15).map((track, i) => (
-                        <div className="mr-6">
+                        <div key={i} className="mr-6">
                             <Recommendation
-                                key={track.toString()}
+                                key={track.station_id}
                                 title={track.songtitle}
                                 artist={track.songartist}
                                 station={track.uberurl.callsign}
@@ -181,6 +221,26 @@ class Main extends Component {
                                     this.getStationInfo(track.station_id)
                                 }
                             ></Recommendation>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+    favHtml() {
+        return (
+            <div className="mx-4">
+                <h1 className="pt-8 pb-2 text-gray-800">Favorites</h1>
+
+                <div className="border-t border-b flex flex-row overflow-x-scroll py-6">
+                    {console.log(this.state.favorites)}
+                    {this.state.favorites.slice(0, 15).map((stationid, i) => (
+                        <div key={stationid} className="mr-6">
+                            <Favorites
+                                key={stationid}
+                                sid={stationid}
+                                hclick={() => this.getStationInfo(stationid)}
+                            ></Favorites>
                         </div>
                     ))}
                 </div>
@@ -213,10 +273,28 @@ class Main extends Component {
                             <React.Fragment>
                                 {this.topHitsHtml()}
                                 {this.recoHtml()}
+                                {this.favHtml()}
                             </React.Fragment>
                         ) : (
                             ""
                         )}
+                    </div>
+
+                    <div className="fixed bottom-0">
+                        {this.state.messengerwindow
+                            .slice(0, 3)
+                            .map((key, i) => (
+                                <Messenger
+                                    key={i}
+                                    owner={this.props.username}
+                                    username={key.username}
+                                    position={i}
+                                    image={key.image}
+                                    genre={key.genre}
+                                    country={key.country}
+                                    thisclose={() => this.closeChat(i)}
+                                ></Messenger>
+                            ))}
                     </div>
                 </div>
                 {this.rightBarHtml()}
@@ -284,7 +362,7 @@ class Main extends Component {
                             {this.state.result.slice(0, 12).map((track, i) => {
                                 return (
                                     <TrackResults
-                                        key={track.toString()}
+                                        key={track.station_id}
                                         title={track.title}
                                         artist={track.artist}
                                         station={track.callsign}
@@ -302,14 +380,113 @@ class Main extends Component {
             </React.Fragment>
         );
     }
-    render() {
-        const { station } = this.state;
 
+    openChat(username, image, genre, country) {
+        let c = true;
+        let element = {
+            username: username,
+            image: image,
+            genre: genre,
+            country: country
+        };
+
+        this.state.messengerwindow.map(key => {
+            if (JSON.stringify(key) == JSON.stringify(element)) {
+                c = false;
+            }
+        });
+
+        if (c == true) {
+            this.setState({
+                messengerwindow: [element].concat(this.state.messengerwindow)
+            });
+        }
+    }
+
+    closeChat(index) {
+        const { messengerwindow } = this.state;
+        if (messengerwindow.length == 1) {
+            this.setState({
+                messengerwindow: []
+            });
+        } else {
+            this.setState({
+                messengerwindow: messengerwindow
+                    .slice(0, index)
+                    .concat(messengerwindow.slice(index + 1))
+            });
+        }
+    }
+    updateFavorites() {
+        console.log("update favorites");
+    }
+
+    leftBarHtml() {
+        const { station, roster } = this.state;
+        return (
+            <div className="leftbar w-3/12  h-screen border-r">
+                <Player station={station}></Player>
+                <div>
+                    <div className="mx-4 mt-4 text-gray-700 text-xs font-hairline">
+                        <h1 className="font-bold">Listeners:</h1>
+                    </div>
+                    <h1 className="ml-6 text-xs font-hairline">Online</h1>
+                    <div className="mb-4">
+                        {roster.online
+                            ? roster.online.map((item, i) =>
+                                  item.username != this.props.username ? (
+                                      <div key={i} className=" my-2 ">
+                                          <Listener
+                                              key={item.username}
+                                              username={item.username}
+                                              image={item.image}
+                                              genre={item.genre}
+                                              country={item.country}
+                                              status={true}
+                                              thisclick={() =>
+                                                  this.openChat(
+                                                      item.username,
+                                                      item.image,
+                                                      item.genre,
+                                                      item.country
+                                                  )
+                                              }
+                                          ></Listener>
+                                      </div>
+                                  ) : (
+                                      ""
+                                  )
+                              )
+                            : ""}
+                    </div>
+                    <h1 className="ml-6 text-xs font-hairline">Offline</h1>
+                    {roster.online
+                        ? roster.offline.map((item, i) =>
+                              item.username != this.props.username ? (
+                                  <div key={i} className="my-2 ">
+                                      <OfflineListener
+                                          key={item.username}
+                                          username={item.username}
+                                          image={item.image}
+                                          genre={item.genre}
+                                          country={item.country}
+                                          status={false}
+                                      ></OfflineListener>
+                                  </div>
+                              ) : (
+                                  ""
+                              )
+                          )
+                        : ""}
+                </div>
+            </div>
+        );
+    }
+
+    render() {
         return (
             <div className="flex flex-row w-screen">
-                <div className="leftbar w-3/12  h-screen bg-green-500">
-                    <Player station={station}></Player>
-                </div>
+                {this.leftBarHtml()}
                 {this.mainHtml()}
             </div>
         );
