@@ -6,15 +6,29 @@ Version: Laravel 6.x
 Frontend Scaffolding: React with Auth
 CSS: Tailwind CSS
 
-## Updates
-### Proxied third party API calls through Controllers fixing same-origin-policy(CORS) error.
-### Updated UI
-* Profile Image Upload/Edit. 
-* Image Validation - size and type.
-* Provided options for genre. 
-* Playlist recommendations based on genre.
-* Layout Update
-### PHPUnit Testing
+##Setup
+- Install Laravel-Echo-Server
+    `npm install -g laravel-echo-server`
+- Install Redis
+    `sudo apt install redis-server`   
+- Change Constant variables for your server.
 
-## Testing
-* Laravel-Echo-Server with Redis for realtime notifications and messaging. Tried pusher but unfortunately it has limitations on concurrent connections and messages.
+#Configuration
+#### With Laravel-Echo-Server, Redis publishes event through this format:
+```
+    $payload=json_encode([
+        'event' => 'event-name',
+        'data' => 'data',
+        'socket' => 'socket'
+    ]);
+
+    Redis::publish('channel-name', $payload);
+````
+#### Client side
+```
+ window.Echo.listen("chanel-name', "." + 'event-name', (data) => {
+    console.log(data.data);
+ });
+```
+#### Note:
+You may intercept client events directly from the Laravel-Echo-Server when the user leave or join the channel. This way you will know when the user left the page or close the browser of your application. Within this intercept, you may call Http request or publish Redis broadcast.
